@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Revit 弱電實作學習指南｜設備定位與出圖（教材練習版）</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip-link" href="#main-content">跳到主要內容</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <button id="nav-toggle" class="nav-toggle" aria-expanded="false" aria-controls="unit-nav">
+      <span class="nav-toggle-icon" aria-hidden="true"></span>
+      單元選單
+    </button>
+    <div class="site-title">
+      <p class="site-eyebrow">教材練習版・非正式規範</p>
+      <h1>Revit 弱電實作學習指南</h1>
+    </div>
+    <div class="progress-badge" id="overall-progress-badge">
+      <span class="progress-badge-label">整體完成度</span>
+      <span class="progress-badge-value" id="overall-progress-value">0%</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <nav id="unit-nav" class="unit-nav" aria-label="課程單元導航">
+    <ul class="nav-list">
+      <li><button type="button" class="nav-btn is-active" data-target="panel-overview">總覽與範圍</button></li>
+      <li class="nav-group-label">實作單元</li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-01">01　視圖與基本操作 <span class="nav-progress" data-nav-progress="01">0/4</span></button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-02">02　連結建築底圖 <span class="nav-progress" data-nav-progress="02">0/4</span></button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-03">03　檢查與使用設備族 <span class="nav-progress" data-nav-progress="03">0/4</span></button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-04">04　設備配置與高度 <span class="nav-progress" data-nav-progress="04">0/4</span></button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-05">05　編號與標註 <span class="nav-progress" data-nav-progress="05">0/4</span></button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-06">06　明細表與數量 <span class="nav-progress" data-nav-progress="06">0/4</span></button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-unit-07">07　圖紙與改動驗收 <span class="nav-progress" data-nav-progress="07">0/4</span></button></li>
+      <li class="nav-group-label">工具與檢核</li>
+      <li><button type="button" class="nav-btn" data-target="panel-height-tool">高度計算練習</button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-troubleshoot">問題排查</button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-final-review">成果驗收總表</button></li>
+      <li><button type="button" class="nav-btn" data-target="panel-sources">來源與適用版本</button></li>
+    </ul>
+    <div class="nav-actions">
+      <button type="button" id="reset-progress-btn" class="btn btn-ghost">重設進度</button>
+      <button type="button" id="print-btn" class="btn btn-primary">列印指南與進度</button>
+    </div>
+  </nav>
+
+  <main id="main-content" class="content">
+    <p id="storage-notice" class="storage-notice" role="status" hidden></p>
+
+    <!-- ========================= 總覽 ========================= -->
+    <section id="panel-overview" class="panel is-active" data-panel>
+      <h2>課程總覽與範圍</h2>
+
+      <div class="callout callout-warning">
+        <p><strong>版本聲明：</strong>本指南所使用之 Revit 版本尚未指定。文中操作路徑（功能區分頁、指令名稱、對話框位置）以近年版本共通概念描述，實際位置可能因版本、語言介面或自訂功能區而不同。操作前請以滑鼠停留查看提示、使用軟體內建搜尋（若該版本提供），或查閱您實際使用版本的官方文件為準，不代表本指南描述適用於所有版本。</p>
+      </div>
+
+      <h3>適用對象</h3>
+      <ul class="plain-list">
+        <li>已具備建立與編輯 Revit 族的基本經驗，但尚未熟悉「放置、標註、明細表、出圖」等專案端操作流程。</li>
+      </ul>
+
+      <h3>建築與場景資料來源</h3>
+      <ul class="plain-list">
+        <li>建築本體與地上物由外部 <code>.rvt</code>、<code>.dwg</code>、<code>.ifc</code> 檔案提供，本指南以「連結」方式引用，不假設由使用者自行建模。</li>
+        <li>練習情境設定為「車站局部區域」，屬教材練習場景，不對應特定實際專案。</li>
+      </ul>
+
+      <h3>練習設備與第一階段成果</h3>
+      <ul class="plain-list">
+        <li>練習設備以「喇叭」與「螢幕」兩類為主。</li>
+        <li>第一階段須完成：設備定位、標註高度、編號、統計數量、PDF 出圖。</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <p><strong>本階段排除範圍：</strong>不教配管、線槽、系統計算（如迴路與負載計算）、MCP、或 AI 自動建模。若您的需求涉及上述項目，請另尋對應教材。</p>
+      </div>
+
+      <h3>練習編號規則</h3>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <tr><th>項目</th><th>編號範圍</th><th>說明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>喇叭</td><td>SP-001 至 SP-006</td><td>共 6 顆</td></tr>
+            <tr><td>螢幕</td><td>DS-001 至 DS-002</td><td>共 2 台</td></tr>
+            <tr><td>圖紙</td><td>E-001</td><td>設備配置與數量表</td></tr>
+            <tr><td>圖紙</td><td>E-002</td><td>局部剖面與高度說明</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout-important">
+        <p>以上編號、數量與後續高度數值，均為<strong>教材練習設定</strong>，並非任何鐵路或高速鐵路工程之官方標準或規範，也不代表任何特定廠商之產品規格。</p>
+      </div>
+
+      <h3>如何使用本指南</h3>
+      <ul class="plain-list">
+        <li>左側（手機為選單按鈕）可切換 7 個實作單元，以及高度計算練習、問題排查、成果驗收總表、來源說明。</li>
+        <li>每個單元固定包含：本單元成果、開始前準備、操作步驟、動手練習、常見錯誤、驗收勾選。</li>
+        <li>勾選項目會自動儲存在您目前使用的瀏覽器中（localStorage），<strong>不會同步到其他裝置或瀏覽器</strong>。</li>
+        <li>完成比例代表「使用者自行勾選確認」，<strong>不構成任何 Revit 技能認證或正式驗收證明</strong>。</li>
+      </ul>
+    </section>
+
+    <!-- ========================= 單元 01 ========================= -->
+    <section id="panel-unit-01" class="panel" data-panel data-unit="01">
+      <h2>01　視圖與基本操作</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>能在平面、剖面、3D 三種視圖中，找到並選取同一顆已放置的設備，並說明三種視圖各自呈現的資訊差異。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>開啟一個包含至少一個已連結建築模型或任一既有範例元素的 Revit 專案。</li>
+        <li>確認專案瀏覽器中已有至少一個平面視圖與一個預設 3D 視圖。</li>
+        <li>確認滑鼠可正常平移、縮放、旋轉 3D 視圖；實際按鍵配置依版本與滑鼠設定可能不同，如有疑問請查閱該版本的操作說明。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li>在專案瀏覽器展開「視圖」節點，雙擊任一平面視圖將其開啟。</li>
+        <li>在繪圖區域點選任一已放置的模型元素，觀察選取後的邊框反白與狀態列顯示的元素類別。</li>
+        <li>尋找「內容」中的屬性面板（若未顯示，嘗試從檢視相關分頁開啟）；查看目前選取元素的實體參數。</li>
+        <li>點選屬性面板上方的「編輯類型」，查看類型參數內容，比較與實體參數顯示欄位的差異。</li>
+        <li>建立或開啟一個剖面視圖，將剖切線放置於通過步驟 2 所選元素的位置。</li>
+        <li>開啟該剖面視圖，確認同一顆元素是否可見；若不可見，先記錄現象，稍後於「問題排查」單元處理。</li>
+        <li>開啟一個 3D 視圖，旋轉、平移、縮放後再次選取同一顆元素，確認狀態列與屬性面板同步更新。</li>
+        <li>在平面視圖中開啟該視圖的「視圖範圍」設定，記錄目前的頂部、剖切面、底部數值，先不修改。</li>
+        <li>開啟「可見性/圖形替換」設定，瀏覽各類別目前的顯示狀態，僅熟悉介面位置，不需修改。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>選取任一既有元素，依序在平面、剖面、3D 三種視圖中都完成一次選取，並記錄屬性面板顯示的「類別」名稱是否三處一致。</li>
+          <li>練習使用「編輯類型」查看類型參數，並嘗試複製一個類型，觀察新類型是否出現在類型清單中。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>把「類型參數」與「實體參數」視為同一組資料，修改類型參數後才發現連動到所有相同類型的元素。</li>
+        <li>因 3D 視圖旋轉角度不佳而誤判元素不存在，實際上是被其他構件遮擋。</li>
+        <li>修改視圖範圍或可見性設定後未記錄原始數值，造成後續排查困難。</li>
+        <li>將「目前視圖看不到」直接判定為「元素未放置成功」，略過視圖範圍與類別可見性檢查。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="01">
+        <li><label><input type="checkbox" data-check-id="u01-c1"><span>已在平面、剖面、3D 三種視圖中選取到同一顆元素</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u01-c2"><span>能分辨屬性面板的「實體參數」與「編輯類型」內「類型參數」的差異</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u01-c3"><span>已找到並開啟「視圖範圍」設定畫面（未修改內容）</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u01-c4"><span>已找到並開啟「可見性/圖形替換」設定畫面（未修改內容）</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="01">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 單元 02 ========================= -->
+    <section id="panel-unit-02" class="panel" data-panel data-unit="02">
+      <h2>02　連結建築底圖</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>完成 RVT、DWG、IFC 三種格式中至少一種的連結流程（建議三種都練習），並完成兩個平面基準點及一個高程的核對記錄。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>取得外部提供的 .rvt、.dwg、.ifc 檔案，先確認檔案可正常開啟；若無法開啟，需先向提供方確認檔案完整性。</li>
+        <li>確認目前專案的基準點與測量點位置是否已知；若完全未知，先記錄為「待確認」，<strong>不自行假設或移動基點</strong>。</li>
+        <li>準備一份記錄表，用於填寫核對結果。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li><strong>RVT 連結：</strong>於「插入」分頁選擇「連結 Revit」，選取目標檔案，定位方式建議依專案既有慣例選擇（例如原點對原點或依共用座標）；若不確定，先記錄為待確認，不自行猜測。完成後於專案瀏覽器的連結節點確認已載入。</li>
+        <li><strong>DWG 連結：</strong>於「插入」分頁選擇「連結 CAD」，先向來源確認單位並指定正確匯入單位，再量測圖上已知尺寸核對比例。「僅目前視圖」適合只供該 2D 視圖參考的底圖；若需跨視圖使用，依用途關閉此選項。</li>
+        <li><strong>IFC 連結：</strong>於「插入」分頁尋找連結 IFC 的功能（部分版本路徑可能不同），選取目標檔案；IFC 連結後的模型在 Revit 中<strong>為唯讀</strong>，無法直接編輯其幾何。</li>
+        <li>三種連結完成後，於專案瀏覽器分別確認連結項目已出現。</li>
+        <li>開啟平面視圖，核對連結模型上至少兩個可辨識的基準點（例如結構柱交點、明確角點）與專案原有對應基準是否重合，記錄座標差異。</li>
+        <li>核對至少一個高程基準：於剖面視圖量測連結模型中已知標高的樓板面或樑底，與目前專案樓層標高的差異，記錄實際偏移值。</li>
+        <li>若偏移超出預期，僅記錄現象與數值，<strong>不自行執行移動或旋轉操作</strong>，待確認座標依據後再處理。</li>
+        <li>選取 RVT／CAD 連結，使用「釘住」功能固定；IFC 連結雖預設唯讀，仍建議一併釘住，避免整體位移。</li>
+        <li>將連結模型設為半色調顯示（常見作法為在可見性/圖形替換的連結分頁調整，或使用視圖範本），方便後續在此底圖上放置設備。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>完成一種連結格式，並在平面視圖上標出兩個核對基準點的座標差異記錄。</li>
+          <li>完成一個高程核對，記錄「連結模型標示高程」與「目前專案對應樓層標高」兩個數值及其差異。</li>
+          <li>將連結模型設為半色調顯示，並記錄設定前後的視覺差異。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>連結 DWG 時單位設定錯誤（例如公釐誤判為英呎），導致比例嚴重失真卻未在核對階段發現。</li>
+        <li>把 IFC 連結誤認為與原生 RVT 連結行為完全相同，嘗試直接編輯 IFC 元素的幾何而失敗——<strong>不應假設兩者行為一致，需個別測試確認。</strong></li>
+        <li>忘記釘住連結模型，操作時不慎移動整個連結；宿主於連結面的設備與獨立放置設備可能有不同行為，移動後須逐一檢查位置與參照。</li>
+        <li>只核對水平基準點，未核對高程，導致垂直方向的安裝高度整層樓偏移。</li>
+        <li>定位方式選擇「手動」卻未實際指定原點，導致連結位置隨機或位於極遠處。</li>
+        <li>誤假設連結模型（RVT／IFC／DWG）中的牆可直接作為原生「牆基準」族的宿主——連結模型屬於外部參照，能否作為宿主需依版本與族設定實際測試，不可預設一定可行。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="02">
+        <li><label><input type="checkbox" data-check-id="u02-c1"><span>已完成至少一種格式（RVT／DWG／IFC）的連結</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u02-c2"><span>已記錄兩個平面基準點的核對結果</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u02-c3"><span>已記錄一個高程核對結果</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u02-c4"><span>已將連結模型釘住並設為半色調顯示</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="02">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 單元 03 ========================= -->
+    <section id="panel-unit-03" class="panel" data-panel data-unit="03">
+      <h2>03　檢查與使用設備族</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>成功載入喇叭與螢幕族各一，並能各自正確放置一顆／一台，重點在放置行為正確，尚不要求最終數量。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>取得或選定喇叭與螢幕的設備族檔案（.rfa），確認其族類別；不同族之分類可能不同，不預先假設。</li>
+        <li>確認單元 02 的連結底圖已完成基準核對，可作為放置參考。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li>於「插入」分頁選擇「載入族」，分別載入喇叭與螢幕的 .rfa 檔案。</li>
+        <li>於專案瀏覽器「族」節點下找到剛載入的族，展開查看其「類型」清單；若只有一種類型而需要多種規格，先記錄待處理，不自行假設會有其他類型。</li>
+        <li>選取喇叭族的一個類型，查看族設定並實際試放，記錄其放置模式：一般牆／天花基準族要求對應宿主；面基準族需可用的幾何面；工作平面族需指定工作平面。連結來源可否作為參照，依族模式與幾何測試。</li>
+        <li>觀察族的插入點與方向：先在任一位置嘗試放置一顆，確認族原點落於何處、正面朝向是否符合預期。</li>
+        <li>查看類型參數與實體參數中，哪些是可調整的規格欄位，哪些是唯讀的系統欄位。</li>
+        <li>若需要建立新規格，使用「複製」建立新類型，修改對應參數後重新命名，並確認原類型未被覆蓋。</li>
+        <li>若有調整族本身幾何或參數結構，使用「另存為」存成新檔名，保留原始族檔案以便追溯。</li>
+        <li>對螢幕族重複步驟 2 至 7，特別留意螢幕族是否需要垂直宿主（例如牆面或立柱），並記錄實際觀察結果，不預先假設。</li>
+        <li>分別在平面視圖放置一顆喇叭與一台螢幕，於 3D 視圖確認顯示正常且方向合理。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>完成一顆喇叭與一台螢幕的載入與首次放置，記錄各自的宿主需求與插入點觀察結果。</li>
+          <li>針對其中一個族，練習複製類型並修改一項規格參數，確認新類型正確顯示於類型清單。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>假設所有設備族都是「獨立式」可自由放置，實際上部分族要求特定宿主，放置時出現無法對齊或報錯。</li>
+        <li>複製類型後忘記重新命名，導致多個類型名稱相同造成混淆。</li>
+        <li>直接修改原始類型參數，影響到專案中其他原本要保留規格的既有元素。</li>
+        <li>忽略族的正面方向設定，放置後方向相反卻未發現。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="03">
+        <li><label><input type="checkbox" data-check-id="u03-c1"><span>已成功載入喇叭與螢幕族</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u03-c2"><span>已記錄兩個族各自的宿主需求觀察結果</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u03-c3"><span>已完成至少一顆喇叭與一台螢幕的首次放置</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u03-c4"><span>已練習複製類型並確認新類型出現在清單中</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="03">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 單元 04 ========================= -->
+    <section id="panel-unit-04" class="panel" data-panel data-unit="04">
+      <h2>04　設備配置與高度</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>完成 6 顆喇叭（SP-001 至 SP-006）與 2 台螢幕（DS-001、DS-002）的位置、樓層、偏移設定，並完成剖面高度核對。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>確認單元 03 已能正確放置喇叭與螢幕族。</li>
+        <li>確認完成地坪（FL）的標高依據已知；若未知，先向提供方確認或記錄為待確認，不自行假設。</li>
+        <li>先至「高度計算練習」頁面試算中心高度與底緣高度，作為本單元填寫偏移值的依據。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li>於平面視圖中，依練習情境決定 SP-001 至 SP-006 六顆喇叭的概略位置，可先用暫時性參考線或文字註記標示。</li>
+        <li>逐一放置 SP-001 至 SP-006，每放置一顆後立即於屬性面板確認「樓層」欄位是否對應正確樓層。</li>
+        <li>針對每顆喇叭，分開確認「偏移」所參照的樓層／宿主／工作平面、族的插入點，以及完成地坪標高。偏移是放置參數，<strong>不一定等於實際中心離地高度</strong>。</li>
+        <li>使用高度計算練習試算目標中心高度與底緣高度，對照偏移欄位；若族的插入點基準與「中心點」不同，需先換算再填入偏移值。</li>
+        <li>放置 DS-001、DS-002 兩台螢幕，重複步驟 2 至 4 的樓層與偏移確認流程。</li>
+        <li>全部 8 顆設備放置完成後，建立或使用既有剖面視圖，剖切線需通過至少一顆喇叭與一台螢幕。</li>
+        <li>於剖面視圖使用「量測」工具核對實際顯示的離地高度是否與試算結果相符；若不符，檢查樓層指定、偏移基準、插入點三者是否有一項設定錯誤。</li>
+        <li>記錄每顆設備最終確認的樓層、偏移值與剖面核對結果，建立簡易對照表，作為單元 05 標註前的資料準備。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>完成 SP-001 至 SP-006 共 6 顆喇叭、DS-001、DS-002 共 2 台螢幕的放置，樓層與偏移均已確認。</li>
+          <li>針對其中至少一顆喇叭與一台螢幕，使用剖面視圖完成高度核對並記錄實際量測結果。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>把「偏移」欄位直接當成「離地高度」填入，忽略族插入點可能不在中心點或底部，導致實際安裝高度與預期不符。</li>
+        <li>樓層指定錯誤（例如指定到上一層樓板），使偏移值看似正確但實際離地高度整層樓偏移。</li>
+        <li>把人工填寫的「安裝高度」欄位誤當成系統自動讀取或控制模型位置的欄位；若未明確建立關聯，它只是獨立記錄，須與剖面量測值核對。</li>
+        <li>剖面核對時剖切線未實際通過待核對元素，核對到的其實是視覺上重疊的其他元素。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="04">
+        <li><label><input type="checkbox" data-check-id="u04-c1"><span>已完成 SP-001 至 SP-006 六顆喇叭放置</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u04-c2"><span>已完成 DS-001、DS-002 兩台螢幕放置</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u04-c3"><span>8 顆設備的樓層與偏移已確認並記錄</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u04-c4"><span>已完成至少一次剖面高度核對且結果已記錄</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="04">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 單元 05 ========================= -->
+    <section id="panel-unit-05" class="panel" data-panel data-unit="05">
+      <h2>05　編號與標註</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>每顆設備都有唯一的 Mark 編號（SP-001~006、DS-001~002），並完成至少一種類別標籤與一項可隨模型更新的定位尺寸標註。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>確認單元 04 的 8 顆設備均已放置且位置、高度已確認。</li>
+        <li>若只標示內建 Mark，確認族與標籤已提供 Mark 欄位即可；只有自訂標籤欄位才需準備共用參數定義。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li>逐一選取每顆設備，於屬性面板找到「標記」（Mark）欄位，依編號規則手動填入，確認 8 顆設備編號各自唯一、無重複。</li>
+        <li>若需在標籤中顯示 Mark 以外的自訂資訊，於「管理」分頁檢查既有共用參數；沒有適用定義時，才建立新的共用參數定義。只顯示內建 Mark 不需此步。</li>
+        <li>將建立好的共用參數加入喇叭與螢幕所屬類別，並指定為「實體參數」（若同類型設備數值相同，也可考慮類型參數；逐顆可能不同時應選實體參數）。</li>
+        <li>建立或選用對應的標籤族。顯示 Mark 時選用該內建欄位；顯示自訂資訊時，確認標籤族與專案元素使用<strong>同一參數定義</strong>（相同身份／GUID），而非只比對名稱或 .txt 檔案路徑。</li>
+        <li>於平面視圖對每顆設備套用類別標籤，確認正確顯示 Mark 編號或自訂參數內容。</li>
+        <li>使用尺寸標註工具，針對至少一顆設備完成一項定位尺寸標註（例如與最近牆面或軸網的距離），確認數值與模型實際位置相符。</li>
+        <li>練習移動其中一顆設備後，重新檢查對應尺寸標註是否自動更新；若未更新，確認該標註是否為關聯式尺寸而非手動寫死的數值。</li>
+        <li>覆核全部 8 顆設備的 Mark 編號、標籤顯示與至少一項定位尺寸，確認可透過編號在圖面上找到對應設備。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>完成 8 顆設備的 Mark 編號填寫，並套用類別標籤使編號正確顯示於平面圖。</li>
+          <li>完成至少一項定位尺寸標註，並測試移動設備位置後尺寸是否同步更新。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>建立參數時使用「專案參數」而非「共用參數」，導致該參數無法用於標籤，標籤顯示空白或無法選取欄位。</li>
+        <li>標籤族與模型使用了名稱相同、但實際分別建立的兩個參數（而非同一共用參數定義），造成標籤顯示問號。</li>
+        <li>Mark 編號重複，導致單元 06 的明細表無法正確區分個別設備。</li>
+        <li>尺寸標註以文字手動輸入數值而非關聯模型元素，移動設備後數值未更新卻誤以為已同步。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="05">
+        <li><label><input type="checkbox" data-check-id="u05-c1"><span>8 顆設備均已填入唯一的 Mark 編號（SP-001~006、DS-001~002）</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u05-c2"><span>已確認 Mark 可直接標示；若有自訂標籤欄位，已使用同一共用參數定義</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u05-c3"><span>至少一種類別標籤已正確顯示編號</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u05-c4"><span>已完成至少一項可隨模型更新的定位尺寸標註</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="05">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 單元 06 ========================= -->
+    <section id="panel-unit-06" class="panel" data-panel data-unit="06">
+      <h2>06　明細表與數量</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>建立喇叭與螢幕的明細表，正確統計出喇叭 6 顆、螢幕 2 台，無漏列與重複。</p>
+      </div>
+
+      <div class="callout callout-important">
+        <p>若實際設備為雙面顯示或背對背設置，應計為一台或兩台，需依設備實體數量與專案計量規則認定；本指南<strong>不預設</strong>雙面螢幕一律等於兩台，DS-001、DS-002 於本練習中代表兩台各自獨立的實體螢幕。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>確認單元 05 的 8 顆設備均已有唯一 Mark 編號。</li>
+        <li>若喇叭與螢幕分屬不同類別，先建立各自的明細表；需要合併時再檢查多類別明細表可用的欄位，自訂跨類別欄位才按需求使用共用參數。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li>於「檢視」分頁選擇「明細表/數量」，先為喇叭類別建立一份逐項表，選擇對應類別後進入欄位設定畫面。</li>
+        <li>加入需要的欄位，至少包含：Mark、類型名稱、樓層、偏移（或單元 05 建立的自訂參數），依需求調整順序。</li>
+        <li>設定「排序/群組」：先依 Mark 或類型排序，確認清單由上到下對應實際 8 顆設備，且每列僅出現一次。</li>
+        <li>若需要統計數量而非逐項清單，建立「類型彙總表」，勾選「計算合計」欄位，確認彙總結果為喇叭 6、螢幕 2（各自分開統計，或以類別欄位分組呈現）。</li>
+        <li>檢查明細表是否有篩選設定意外排除了部分元素，核對明細表列數與模型中實際放置數量是否一致。</li>
+        <li>檢查明細表的欄位篩選條件與模型群組/階段設定，確認未因階段設定將部分元素排除在外。</li>
+        <li>若專案中連結模型本身也放置了相同類別的設備，需確認明細表是否誤將連結模型元素一併算入或誤排除，依實際需求決定是否納入。</li>
+        <li>核對是否有巢狀族造成的重複計數（例如族內若巢狀包含另一個可獨立計數的子族，可能被明細表重複列出），逐項確認每一列對應到唯一一顆實體設備。</li>
+        <li>將明細表數量與單元 04 記錄的放置清單逐一比對，確認完全一致，無遺漏也無重複。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>建立喇叭逐項表與螢幕逐項表（或合併的類型彙總表，依需求擇一），確認欄位包含 Mark 與樓層。</li>
+          <li>完成一次數量核對，確認喇叭 6、螢幕 2，並記錄核對過程中是否發現任何差異及其原因。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>要合併不同類別卻未先確認多類別明細表支援的欄位與篩選條件，導致漏列或欄位空白；自訂共通欄位再依需求加入共用參數。</li>
+        <li>明細表設有篩選條件卻忘記檢查，導致實際 8 顆設備明細表卻只列出 7 顆。</li>
+        <li>因巢狀族結構導致同一顆實體設備被算成兩筆，彙總數量虛增。</li>
+        <li>連結模型中若有其他團隊已放置的同類設備，誤被計入本次練習範圍的數量統計。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="06">
+        <li><label><input type="checkbox" data-check-id="u06-c1"><span>已建立喇叭明細表，列數與實際放置數一致（6 筆）</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u06-c2"><span>已建立螢幕明細表，列數與實際放置數一致（2 筆）</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u06-c3"><span>已完成一次數量核對且確認無漏列、無重複</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u06-c4"><span>已檢查並排除篩選／階段／巢狀族造成的計數誤差可能性</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="06">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 單元 07 ========================= -->
+    <section id="panel-unit-07" class="panel" data-panel data-unit="07">
+      <h2>07　圖紙與改動驗收</h2>
+
+      <div class="outcome-box">
+        <p class="outcome-label">本單元成果</p>
+        <p>完成 E-001（設備配置與數量表）、E-002（局部剖面與高度說明）兩張圖紙的排版與 PDF 出圖，並完成一次改動與還原測試，確認圖面、模型、明細表三者一致。</p>
+      </div>
+
+      <h3>開始前準備</h3>
+      <ul class="plain-list">
+        <li>確認單元 06 的明細表已核對完成且數量正確。</li>
+        <li>確認已有可用的圖框族；本單元不涵蓋圖框族的完整製作教學，僅涵蓋排圖與出圖流程。</li>
+      </ul>
+
+      <h3>操作步驟</h3>
+      <ol class="steps-list">
+        <li>建立新圖紙，套用圖框族，命名圖紙編號為 E-001，圖紙名稱訂為「設備配置與數量表」。</li>
+        <li>建立或選用一個平面視圖作為 E-001 的主要配置圖，調整比例，並設定裁切區域框出車站局部區域範圍。</li>
+        <li>將調整好的平面視圖拖曳至 E-001 圖紙，並將單元 06 的明細表一併拖曳至同一張圖紙，排列相對位置。</li>
+        <li>建立第二張圖紙，命名為 E-002，圖紙名稱訂為「局部剖面與高度說明」。</li>
+        <li>使用單元 04 已建立的剖面視圖（或另建一個聚焦於設備高度的剖面），調整比例與裁切範圍後拖曳至 E-002 圖紙，可視需要加入高度核對文字註記。</li>
+        <li>檢查兩張圖紙的視圖標題、比例標示、圖名圖號是否正確顯示，確認無預設佔位文字殘留。</li>
+        <li>使用匯出功能將 E-001、E-002 匯出為 PDF，確認匯出範圍正確涵蓋整張圖紙（包含圖框），檢查文字與線條清晰度、比例是否與畫面顯示一致。</li>
+        <li>進行改動驗收測試：選定一顆設備，依序執行「移動位置」「抬高偏移」「修改 Mark 編號」「刪除」四項操作，每執行一項後立即檢查 E-001 明細表數量與 E-002 剖面高度是否同步反映變更。</li>
+        <li>完成四項改動測試後，使用復原（Undo）將模型還原至測試前狀態，再次核對明細表數量（應回到 6 喇叭、2 螢幕）與圖紙內容是否也一併還原。</li>
+        <li>最終確認：圖面（E-001、E-002）、模型（8 顆設備的實際位置與參數）、明細表（數量與編號）三者呈現的資訊完全一致。</li>
+      </ol>
+
+      <div class="exercise-box">
+        <p class="exercise-label">動手練習</p>
+        <ul class="plain-list">
+          <li>完成 E-001、E-002 兩張圖紙的排版，並各自匯出一份 PDF。</li>
+          <li>完成一次完整的「移動→抬高→改編號→刪除→復原」測試，記錄每一步驟後明細表與圖紙的反應是否符合預期。</li>
+        </ul>
+      </div>
+
+      <h3>常見錯誤</h3>
+      <ul class="error-list">
+        <li>圖紙比例與裁切範圍設定不一致，導致配置圖顯示範圍與明細表統計範圍不符（例如裁切掉部分設備但明細表仍計入）。</li>
+        <li>匯出 PDF 時範圍設定錯誤，只匯出部分圖紙內容或未包含圖框。</li>
+        <li>改動測試後忘記執行復原，導致後續其他單元練習的基礎資料（6 喇叭 2 螢幕）被永久改變。</li>
+        <li>復原後未重新核對明細表，誤以為畫面看似正常就代表資料已完全還原。</li>
+      </ul>
+
+      <h3>驗收勾選</h3>
+      <ul class="checklist" data-checklist="07">
+        <li><label><input type="checkbox" data-check-id="u07-c1"><span>已完成 E-001 圖紙排版並匯出 PDF</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u07-c2"><span>已完成 E-002 圖紙排版並匯出 PDF</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u07-c3"><span>已完成「移動、抬高、改編號、刪除」四項改動測試且逐項記錄反應</span></label></li>
+        <li><label><input type="checkbox" data-check-id="u07-c4"><span>已完成復原並重新核對明細表與圖紙，確認三者一致</span></label></li>
+      </ul>
+      <p class="unit-progress-text" data-unit-progress-text="07">本單元完成度：0/4</p>
+    </section>
+
+    <!-- ========================= 高度計算練習 ========================= -->
+    <section id="panel-height-tool" class="panel" data-panel>
+      <h2>高度計算練習</h2>
+
+      <div class="callout callout-important">
+        <p>本工具僅進行<strong>幾何計算</strong>，不會控制或讀取實際 Revit 模型。預設值（中心高度 2700 mm、本體高度 800 mm）僅為本教材練習之預設輸入，並非引用自任何正式規範或特定廠牌規格。本工具<strong>不判斷</strong>是否符合任何鐵路／高速鐵路規範，計算結果也<strong>不代表</strong>設計已通過驗收。</p>
+      </div>
+
+      <p class="tool-scope-note">適用條件：螢幕直立、上下相對中心點對稱。若設備非對稱造型，本計算方式不適用。</p>
+      <p class="tool-scope-note">本工具練習輸入範圍：中心離完成地坪 0～6000 mm；本體高度 1～3000 mm。此範圍不是工程規範。族插入點與偏移只影響 Revit 放置參數換算，不改變已量得的實際中心高度公式。</p>
+
+      <div class="height-tool">
+        <div class="height-tool-inputs">
+          <div class="field">
+            <label for="input-center-height">中心離完成地坪高度（mm）</label>
+            <input type="text" inputmode="decimal" id="input-center-height" value="2700" aria-describedby="error-center-height">
+            <p class="field-error" id="error-center-height"></p>
+          </div>
+          <div class="field">
+            <label for="input-body-height">螢幕本體高度（mm）</label>
+            <input type="text" inputmode="decimal" id="input-body-height" value="800" aria-describedby="error-body-height">
+            <p class="field-error" id="error-body-height"></p>
+          </div>
+        </div>
+
+        <div class="height-tool-result">
+          <p class="result-line">底緣離地 = 實際中心離地 − 本體高度 ÷ 2；頂緣離地 = 實際中心離地 + 本體高度 ÷ 2</p>
+          <p class="result-value" id="result-bottom-height" role="status" aria-live="polite">結果：—</p>
+          <p class="result-value" id="result-top-height"></p>
+          <p class="field-warning" id="warning-below-floor" role="alert"></p>
+        </div>
+
+        <div class="height-tool-diagram">
+          <svg id="height-diagram" viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="螢幕安裝高度剖面示意圖">
+            <line id="d-floor-line" x1="20" y1="380" x2="280" y2="380" stroke="var(--color-navy-800)" stroke-width="3"></line>
+            <text id="d-floor-label" x="24" y="396" class="svg-label">完成地坪（FL）0</text>
+            <g id="diagram-dynamic">
+
+            <rect id="d-screen-rect" x="110" y="0" width="80" height="0" fill="var(--color-navy-100)" stroke="var(--color-navy-700)" stroke-width="2"></rect>
+            <text id="d-body-label" x="196" y="0" class="svg-label"></text>
+
+            <line id="d-center-line" x1="90" y1="0" x2="210" y2="0" stroke="var(--color-orange-600)" stroke-width="2" stroke-dasharray="6 4"></line>
+            <text id="d-center-label" x="214" y="0" class="svg-label svg-label-orange"></text>
+
+            <line id="d-dim-center-top" x1="60" y1="0" x2="60" y2="380" stroke="var(--color-navy-500)" stroke-width="1"></line>
+            <line id="d-tick-center-a" x1="54" y1="0" x2="66" y2="0" stroke="var(--color-navy-500)" stroke-width="1"></line>
+            <line id="d-tick-center-b" x1="54" y1="380" x2="66" y2="380" stroke="var(--color-navy-500)" stroke-width="1"></line>
+            <text id="d-dim-center-text" x="60" y="0" class="svg-label"></text>
+
+            <line id="d-dim-bottom-top" x1="245" y1="0" x2="245" y2="380" stroke="var(--color-navy-500)" stroke-width="1"></line>
+            <line id="d-tick-bottom-a" x1="239" y1="0" x2="251" y2="0" stroke="var(--color-navy-500)" stroke-width="1"></line>
+            <line id="d-tick-bottom-b" x1="239" y1="380" x2="251" y2="380" stroke="var(--color-navy-500)" stroke-width="1"></line>
+            <text id="d-dim-bottom-text" x="245" y="0" class="svg-label"></text>
+            </g>
+          </svg>
+          <p id="diagram-values" class="diagram-values"></p>
+        </div>
+      </div>
+
+      <div class="field-warning-box" id="below-floor-box" hidden>
+        <p>此設定使螢幕底緣低於地坪</p>
+      </div>
+    </section>
+
+    <!-- ========================= 問題排查 ========================= -->
+    <section id="panel-troubleshoot" class="panel" data-panel>
+      <h2>問題排查</h2>
+      <p class="section-intro">點選任一問題展開，依序檢查列出的項目。</p>
+
+      <details class="qa-item">
+        <summary>設備放了看不到</summary>
+        <ol class="steps-list">
+          <li>檢查目前視圖的「視圖範圍」（頂部／剖切面／底部）是否涵蓋設備所在高度。</li>
+          <li>檢查「可見性/圖形替換」中該設備所屬類別是否被關閉。</li>
+          <li>檢查該視圖是否設有裁切區域，且裁切掉了設備所在範圍。</li>
+          <li>檢查設備的建立階段，是否被目前視圖的「階段」設定排除。</li>
+          <li>檢查族本身的詳細度設定：部分族僅在「精細」層級才顯示部分子項目。</li>
+        </ol>
+      </details>
+
+      <details class="qa-item">
+        <summary>設備貼不上天花</summary>
+        <ol class="steps-list">
+          <li>確認族是否要求特定宿主類型（例如僅能貼附於「天花板」類別，而非樓板或樓層）。</li>
+          <li>確認天花是否位於連結模型中：一般天花基準族、面基準族、工作平面族的放置方式不同；面基準族若有可用連結幾何面，可嘗試選面放置，並在連結更新後核對參照。</li>
+          <li>確認天花來源是否僅為 2D DWG 圖層線條——線條本身不是可作為宿主的實體天花物件，需先確認天花是否為模型中的 3D 實體，而非僅是 2D 線條表示。</li>
+          <li>確認放置指令本身選用的模式（例如「放置於面」與「放置於工作平面」行為不同），需依族的宿主設定選擇對應指令。</li>
+        </ol>
+      </details>
+
+      <details class="qa-item">
+        <summary>平面正確但高度錯</summary>
+        <ol class="steps-list">
+          <li>檢查樓層指定是否正確。</li>
+          <li>檢查宿主：若為宿主式族，偏移基準是宿主而非樓層。</li>
+          <li>檢查偏移欄位數值與其基準定義。</li>
+          <li>檢查插入點是中心點或底部，這會影響偏移換算方式。</li>
+          <li>檢查完成地坪標高是否與樓層標高一致；若完成地坪高於或低於樓層零點，偏移需額外加減這個差值。</li>
+        </ol>
+      </details>
+
+      <details class="qa-item">
+        <summary>標籤顯示問號</summary>
+        <ol class="steps-list">
+          <li>確認對應參數是否已填值。</li>
+          <li>確認標籤族是否相容於該元素類別。</li>
+          <li>若標籤顯示內建 Mark，先檢查該欄位值與標籤設定；若顯示自訂欄位，再確認標籤與模型元素使用<strong>同一個</strong>共用參數定義——名稱相同但分別建立的參數不會互通。</li>
+        </ol>
+      </details>
+
+      <details class="qa-item">
+        <summary>明細表缺少設備</summary>
+        <ol class="steps-list">
+          <li>確認明細表的類別選擇是否正確。</li>
+          <li>確認是否設有篩選條件排除了該設備。</li>
+          <li>確認階段設定是否將該設備排除。</li>
+          <li>確認該設備是否位於連結模型中：明細表預設通常僅統計目前模型的元素，連結模型元素需另行設定才能一併統計。</li>
+        </ol>
+      </details>
+
+      <details class="qa-item">
+        <summary>數量重複</summary>
+        <ol class="steps-list">
+          <li>確認是否重複放置了兩顆位置相近的設備。</li>
+          <li>若專案中同時有連結模型，且連結模型也放置了同類設備，確認是否被誤一併計入。</li>
+          <li>確認族本身是否為巢狀族結構，導致內部子族被明細表額外計算一次。</li>
+        </ol>
+      </details>
+    </section>
+
+    <!-- ========================= 成果驗收總表 ========================= -->
+    <section id="panel-final-review" class="panel" data-panel>
+      <h2>成果驗收總表</h2>
+      <p class="section-intro">本頁彙整所有單元的勾選狀態，用於辨識哪些項目尚未完成。勾選狀態由您自行確認並儲存於本機瀏覽器。</p>
+
+      <div class="final-summary" id="final-summary">
+        <!-- 由 app.js 動態產生 -->
+      </div>
+
+      <div class="final-actions">
+        <button type="button" class="btn btn-primary" id="print-btn-secondary">列印指南與進度</button>
+        <button type="button" class="btn btn-ghost" id="export-record-btn">匯出學習紀錄 TXT</button>
+      </div>
+
+      <div class="callout callout-important">
+        <p>完成比例僅代表使用者自行勾選確認，<strong>不構成任何 Revit 技能認證或正式驗收證明</strong>。</p>
+      </div>
+    </section>
+
+    <!-- ========================= 來源與適用版本 ========================= -->
+    <section id="panel-sources" class="panel" data-panel>
+      <h2>來源與適用版本</h2>
+
+      <div class="callout callout-warning">
+        <p>本指南之操作步驟依據 Autodesk 官方文件與一般 Revit 操作邏輯撰寫為教材版本，<strong>並未於特定安裝環境中逐步實機截圖或錄製操作紀錄</strong>；實際畫面配置請以您所使用版本之軟體介面為準。若操作路徑與本指南描述不同，以官方文件或軟體內建說明為準。</p>
+      </div>
+
+      <h3>參考來源</h3>
+      <ul class="source-list">
+        <li>
+          <p class="source-title">連結定位與共用座標</p>
+          <p class="source-desc">Autodesk 2025 說明原點對原點、專案基點及手動定位等選項；專案間若有座標約定，應依約定選擇定位方式並核對基準點。</p>
+          <a href="https://help.autodesk.com/cloudhelp/2025/ENU/RevitLT-Model/files/GUID-C922A152-0A30-4E27-BED2-BCE9FF2E5E30.htm" target="_blank" rel="noopener">help.autodesk.com — Positioning for Imports and Links（2025）</a>
+        </li>
+        <li>
+          <p class="source-title">CAD 連結的可見範圍與單位</p>
+          <p class="source-desc">Autodesk 2025 說明「僅目前視圖」與匯入單位選項；連結後仍應用已知尺寸核對實際比例。</p>
+          <a href="https://help.autodesk.com/cloudhelp/2025/ENU/RevitLT-Model/files/GUID-D184A004-D0BF-44D1-9C02-99480B129CAD.htm" target="_blank" rel="noopener">help.autodesk.com — Import and Link Options（2025）</a>
+        </li>
+        <li>
+          <p class="source-title">連結 IFC</p>
+          <p class="source-desc">Autodesk 官方說明「About Linking to IFC Files」：說明 IFC 連結後模型為唯讀、可作為尺寸標註與對齊參考，以及部分面宿主族的可行性；連結所使用的處理引擎與定位選項在不同版本間可能有差異，請以您實際使用版本之說明為準。</p>
+          <a href="https://help.autodesk.com/cloudhelp/2023/ENU/Revit-Model/files/GUID-BAA2ED9C-5107-4F21-ABE1-1ACF609AEEE3.htm" target="_blank" rel="noopener">help.autodesk.com — About Linking to IFC Files</a>
+        </li>
+        <li>
+          <p class="source-title">共用參數</p>
+          <p class="source-desc">Autodesk 官方說明「Shared Parameters」：說明共用參數定義獨立於任何族或專案檔案之外，可用於標籤與跨類別（多類別）明細表，且不同檔案中使用同一共用參數定義的元素間，其填寫的數值不會自動互相帶入。</p>
+          <a href="https://help.autodesk.com/cloudhelp/2022/ENU/Revit-Model/files/GUID-E7D12B71-C50D-46D8-886B-8E0C2B285988.htm" target="_blank" rel="noopener">help.autodesk.com — Shared Parameters（2022）</a>
+        </li>
+        <li>
+          <p class="source-title">Mark 標籤</p>
+          <p class="source-desc">Autodesk 2025 標籤教學以門標籤讀取元素的 Mark 作例子；本練習應先確認設備類別可用的 Mark 與標籤欄位，自訂欄位才另處理共用參數。</p>
+          <a href="https://help.autodesk.com/cloudhelp/2025/ENU/Revit-GetStarted/files/GUID-D3940A76-10D0-4C5B-A137-9147E35E88FC.htm" target="_blank" rel="noopener">help.autodesk.com — Create a Tag Family（2025）</a>
+        </li>
+        <li>
+          <p class="source-title">族的共用與共用參數</p>
+          <p class="source-desc">「族的共用」涉及巢狀構件能否在專案中獨立選取、標註與統計；「共用參數」是跨族與標籤使用的欄位定義，兩者用途不同。本指南只要求辨別差異，不加入巢狀族製作練習。</p>
+          <a href="https://help.autodesk.com/cloudhelp/2025/ENU/Revit-Model/files/GUID-8C3FF1C9-8002-4686-9C12-725FF2C0DF46.htm" target="_blank" rel="noopener">help.autodesk.com — Load Families with Shared Components（2025）</a>
+        </li>
+        <li>
+          <p class="source-title">使用共用參數建立明細表</p>
+          <p class="source-desc">Autodesk 官方教學「Create schedules and annotation families in Revit using shared parameters」，說明以共用參數銜接標籤與明細表欄位的流程。</p>
+          <a href="https://www.autodesk.com/learn/ondemand/tutorial/create-schedules-and-annotation-families-in-revit-using-shared-parameters" target="_blank" rel="noopener">autodesk.com — Create schedules and annotation families using shared parameters</a>
+        </li>
+      </ul>
+
+      <div class="callout callout-important">
+        <p><strong>目前無法驗證項目：</strong>您實際使用的 Revit 版本與語言介面、對應選單的確切位置與名稱、以及您所使用的圖框族與共用參數檔案內容，均超出本指南可查證範圍，請自行以實際軟體介面與專案設定為準。</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="app.js" defer></script>
+</body>
+</html>
