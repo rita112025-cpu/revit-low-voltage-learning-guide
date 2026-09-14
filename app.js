@@ -107,6 +107,23 @@
   /* ==========================================================
      導航切換
      ========================================================== */
+  function scrollPanelToTop(targetPanel) {
+    var header = document.querySelector(".site-header");
+    var headerHeight = header ? header.getBoundingClientRect().height : 0;
+    var gap = 16;
+
+    var top =
+      targetPanel.getBoundingClientRect().top +
+      window.scrollY -
+      headerHeight -
+      gap;
+
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: "instant"
+    });
+  }
+
   function initNav() {
     var navBtns = qsa(".nav-btn");
     var panels = qsa(".panel");
@@ -127,9 +144,9 @@
           var heading = targetPanel.querySelector("h2");
           if (heading) {
             heading.setAttribute("tabindex", "-1");
-            heading.focus({ preventScroll: false });
+            heading.focus({ preventScroll: true });
           }
-          targetPanel.scrollIntoView({ behavior: "instant", block: "start" });
+          scrollPanelToTop(targetPanel);
         }
 
         // 手機版：切換單元後自動收合選單
